@@ -34,7 +34,7 @@ function Home({navigation}) {
 
   useEffect(() => {
     if (department && year) {
-      navigation.navigate('Schedule', {
+      navigation.navigate('ProfileDetail', {
         department: department,
         year: year,
       });
