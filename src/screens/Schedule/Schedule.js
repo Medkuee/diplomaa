@@ -1,5 +1,12 @@
 import React, {useEffect, useState, useContext} from 'react';
-import {Text, View, ScrollView, Pressable} from 'react-native';
+import {
+  Text,
+  View,
+  ScrollView,
+  Pressable,
+  Image,
+  TouchableOpacity,
+} from 'react-native';
 
 //styles
 import styles from './styles';
@@ -11,40 +18,87 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import CustomTextInput from '../../components/local/CustomTextInput';
 import Search1Svg from '../../assets/icons/Search1Svg';
 
-function Schedule({navigation, route}) {
-  const {department, year} = route.params;
-  const [data, setData] = useState([]);
-  const [classes, setClasses] = useState([
-    'Class1',
-    'Class2',
-    'Class3',
-    'Class4',
-    'Class5',
-    'Class6',
-    'Class7',
-    'Class8',
-    'Class9',
-    'Class10',
-    'Class11',
-  ]);
+import axios from 'axios';
 
-  console.log(department, year);
+function Schedule({navigation, route}) {
+  const {loginToken} = route.params;
+
+  const [data, setData] = useState([]);
+  const [classes, setClasses] = useState(['Example Class', 'Example Class']);
+  const [department, setDepartment] = useState('');
+  const [year, setYear] = useState('');
+
+  const api = axios.create({
+    baseURL: `http://127.0.0.1:8000/api/`,
+  });
+
+  useEffect(() => {
+    fetchSchedule();
+    fetchProfile();
+  }, []);
+
+  const fetchSchedule = () => {
+    api
+      .get('posts', {
+        headers: {
+          Authorization: `Bearer ${loginToken}`,
+        },
+      })
+      .then(res => {
+        console.log('res', res.data);
+        setData(res.data.data);
+        return res.data;
+      });
+  };
+
+  const fetchProfile = () => {
+    api
+      .get('custom_users/profile', {
+        headers: {
+          Authorization: `Bearer ${loginToken}`,
+        },
+      })
+      .then(res => {
+        console.log('profileData', res.data);
+        setYear(res.data.year);
+        setDepartment(res.data.department);
+        return res.data;
+      });
+  };
+
+  const handleDelete = id => {
+    api
+      .delete(`posts/${id}`, {
+        headers: {
+          Authorization: `Bearer ${loginToken}`,
+        },
+      })
+      .then(function (response) {
+        console.log(response.data);
+        fetchSchedule();
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
 
   const navigateActivity = () => {
     navigation.navigate('Activity', {
-      data: data,
-      department: department,
-      year: year,
+      loginToken: loginToken,
+    });
+  };
+  const navigateAddSchedule = () => {
+    navigation.navigate('AddSchedule', {
+      loginToken: loginToken,
+    });
+  };
+  const navigateProfile = () => {
+    navigation.push('Profile', {
+      loginToken: loginToken,
     });
   };
 
-  const registerClass = id => {
-    let filteredArray = classes.filter(item => item !== classes[id]);
-    setClasses(filteredArray);
-    setData([...data, classes[id]]);
-  };
-
-  console.log(classes, 'dataa', data);
+  console.log('loginToken', loginToken);
 
   return (
     <SafeAreaView>
@@ -54,48 +108,79 @@ function Schedule({navigation, route}) {
         </View>
         <View style={[styles.headerNameContainer]}>
           <Text style={[styles.headerName]}>
-            {department} {year}
+            {year} {department}
           </Text>
+          <TouchableOpacity
+            style={[styles.profileIcon]}
+            onPress={navigateProfile}>
+            <Image
+              style={[styles.closeBack]}
+              source={require('../../assets/images/profileIcon.png')}
+            />
+          </TouchableOpacity>
         </View>
 
-        <CustomTextInput
-          placeholder="Search..."
-          style={[styles.inputTextStyle]}
-          textStyle={{fontSize: 16}}>
-          <Search1Svg />
-        </CustomTextInput>
+        <View style={[styles.bodyContainer]}>
+          <ScrollView style={[styles.scrollView]}>
+            <View style={[styles.scrollViewContainer]}>
+              {data.length > 0
+                ? data.map((classy, index) => (
+                    <AppButton
+                      key={`button${index}`}
+                      style={[
+                        styles.appButton,
+                        {backgroundColor: classy.color},
+                      ]}
+                      onLongPress={() => handleDelete(classy.id)}
+                      textStyle={{color: 'white'}}
+                      text={classy.course_name}
+                      background={{
+                        justifyContent: 'space-between',
+                        paddingHorizontal: 20,
+                      }}>
+                      <View>
+                        <Text>{classy.day}</Text>
+                        <Text>{classy.period}</Text>
+                      </View>
+                    </AppButton>
+                  ))
+                : classes.map((classy, index) => (
+                    <AppButton
+                      key={`button${index}`}
+                      style={[styles.appButton]}
+                      textStyle={{color: 'black'}}
+                      text={classy}
+                      background={{
+                        justifyContent: 'space-between',
+                        paddingHorizontal: 20,
+                      }}>
+                      <ArrowSvg color="#3E256D" />
+                    </AppButton>
+                  ))}
+            </View>
+          </ScrollView>
 
-        <ScrollView style={[styles.scrollView]}>
-          <View style={[styles.scrollViewContainer]}>
-            {classes.map((classy, index) => (
-              <AppButton
-                key={`button${index}`}
-                style={[styles.appButton]}
-                textStyle={{color: 'black'}}
-                text={classy}
-                background={{
-                  justifyContent: 'space-between',
-                  paddingHorizontal: 20,
-                }}
-                onPress={() => registerClass(index)}>
-                <ArrowSvg color="#3E256D" />
-              </AppButton>
-            ))}
+          <View style={[styles.bottom]}>
+            <Pressable
+              style={[styles.bottomContainer, {backgroundColor: 'white'}]}
+              onPress={navigateActivity}>
+              <Text style={[styles.bottomContainerText, {color: 'black'}]}>
+                Activity
+              </Text>
+            </Pressable>
+            <Pressable style={[styles.bottomContainer]}>
+              <Text style={[styles.bottomContainerText]}>Schedule</Text>
+            </Pressable>
           </View>
-        </ScrollView>
-
-        <View style={[styles.bottom]}>
-          <Pressable
-            style={[styles.bottomContainer, {backgroundColor: 'white'}]}
-            onPress={navigateActivity}>
-            <Text style={[styles.bottomContainerText, {color: 'black'}]}>
-              Activity
-            </Text>
-          </Pressable>
-          <Pressable style={[styles.bottomContainer]}>
-            <Text style={[styles.bottomContainerText]}>Schedule</Text>
-          </Pressable>
         </View>
+
+        <TouchableOpacity
+          style={[styles.addImageContainer]}
+          onPress={navigateAddSchedule}>
+          <Image
+            style={[styles.addImage]}
+            source={require('../../assets/images/add2.jpeg')}></Image>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );

@@ -8,7 +8,7 @@ export default StyleSheet.create({
   container: {
     alignItems: 'center',
     height: '100%',
-    backgroundColor: '#F7F8F9',
+    backgroundColor: '#59425B',
   },
   header: {
     width: '100%',
@@ -16,17 +16,19 @@ export default StyleSheet.create({
     // borderStyle: 'solid',
     // borderBottomColor: 'black',
     // borderBottomWidth: 2,
-    backgroundColor: '#3E256D',
+    backgroundColor: '#59425B',
     justifyContent: 'center',
     alignItems: 'center',
   },
   headerNameContainer: {
     width: '100%',
     height: Calculator(100),
-    backgroundColor: '#3E256D',
+    backgroundColor: '#59425B',
     paddingLeft: 40,
     borderBottomWidth: 20,
-    borderColor: '#3E256D',
+    borderColor: '#59425B',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
   },
   headerText: {
     fontSize: 20,
@@ -38,6 +40,17 @@ export default StyleSheet.create({
     color: 'white',
     marginTop: 20,
   },
+  profileIcon: {
+    width: 50,
+    height: 50,
+    marginRight: 20,
+    backgroundColor: 'white',
+    borderRadius: 20,
+  },
+  closeBack: {
+    width: '100%',
+    height: '100%',
+  },
   bottom: {
     position: 'absolute',
     bottom: 0,
@@ -46,7 +59,7 @@ export default StyleSheet.create({
   },
   bottomContainer: {
     width: '50%',
-    backgroundColor: '#3E256D',
+    backgroundColor: '#59425B',
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -57,11 +70,12 @@ export default StyleSheet.create({
   appButton: {
     width: '95%',
     backgroundColor: 'white',
-    borderRadius: 0,
+    borderRadius: 10,
     height: Calculator(70),
   },
   scrollView: {
     width: '100%',
+    marginTop: 30,
   },
   scrollViewContainer: {
     width: '100%',
@@ -75,5 +89,28 @@ export default StyleSheet.create({
     backgroundColor: 'white',
     paddingLeft: 29,
     marginTop: -30,
+  },
+  addImageContainer: {
+    width: 70,
+    height: 70,
+    alignSelf: 'flex-end',
+    marginRight: 15,
+    marginBottom: 20,
+    marginTop: 20,
+    position: 'absolute',
+    bottom: 80,
+    right: 20,
+  },
+  addImage: {
+    width: '100%',
+    height: '100%',
+  },
+  bodyContainer: {
+    height: '85%',
+    width: '100%',
+    backgroundColor: 'white',
+    borderRadius: 50,
+    alignItems: 'center',
+    marginTop: -35,
   },
 });

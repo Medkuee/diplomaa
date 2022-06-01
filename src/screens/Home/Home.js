@@ -21,7 +21,9 @@ const departments = [
 
 const years = ['Freshman', 'Sophomore', 'Junior', 'Senior'];
 
-function Home({navigation}) {
+function Home({navigation, route}) {
+  const {loginToken} = route.params;
+
   const [department, setDepartment] = useState(null);
   const [year, setYear] = useState(null);
 
@@ -37,11 +39,10 @@ function Home({navigation}) {
       navigation.navigate('ProfileDetail', {
         department: department,
         year: year,
+        loginToken: loginToken,
       });
     }
   }, [year]);
-
-  console.log('ez', department, year);
 
   return (
     <View style={[styles.container]}>

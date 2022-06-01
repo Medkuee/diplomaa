@@ -9,9 +9,13 @@ function AppButton({
   background,
   onPress,
   text = '',
+  onLongPress,
 }) {
   return (
-    <TouchableOpacity style={[styles.container, style]} onPress={onPress}>
+    <TouchableOpacity
+      style={[styles.container, style]}
+      onPress={onPress}
+      onLongPress={onLongPress}>
       <View style={[styles.linear, background]}>
         <Text style={[styles.text, textStyle]}>{text}</Text>
         <View>{children}</View>

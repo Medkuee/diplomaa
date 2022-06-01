@@ -21,7 +21,7 @@ export default StyleSheet.create({
   appButton: {
     width: widthCalculator(130),
     marginRight: 10,
-    backgroundColor: '#3E256D',
+    backgroundColor: '#59425B',
   },
   mainContent: {
     width: '74.5%',
