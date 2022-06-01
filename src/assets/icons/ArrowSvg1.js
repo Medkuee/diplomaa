@@ -1,9 +1,9 @@
 import React from 'react';
 import {Svg, Defs, Rect, G, Path, Stop, LinearGradient} from 'react-native-svg';
-export default ({color = '#FF8F5F'}) => (
+export default ({color = '#fff'}) => (
   <Svg
-    width="20"
-    height="14"
+    width="26"
+    height="18"
     viewBox="0 0 8 14"
     fill="none"
     xmlns="http://www.w3.org/2000/svg">

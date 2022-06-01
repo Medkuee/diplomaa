@@ -1,13 +1,8 @@
-import {StyleSheet, Dimensions} from 'react-native';
+import {StyleSheet} from 'react-native';
 import colors from '../../styles/colors';
-import borderCalculator from '../../utils/borderCalculator';
 import Calculator from '../../utils/calculator';
 import fontCalculator from '../../utils/fontCalculator';
 import widthCalculator from '../../utils/widthCalculator';
-
-export const width = Dimensions.get('screen').width;
-export const height = Calculator(230);
-export const ListPaddingBottom = 100;
 
 export default StyleSheet.create({
   container: {
@@ -24,7 +19,7 @@ export default StyleSheet.create({
   },
   headerNameContainer: {
     width: '100%',
-    height: Calculator(80),
+    height: Calculator(100),
     backgroundColor: '#59425B',
     paddingLeft: 40,
     borderBottomWidth: 20,
@@ -40,17 +35,6 @@ export default StyleSheet.create({
     color: 'white',
     fontWeight: '600',
     marginTop: 10,
-  },
-
-  imageBox: {
-    marginTop: 10,
-    width: 130,
-    height: 130,
-    marginBottom: 10,
-  },
-  image: {
-    width: '100%',
-    height: '100%',
   },
   addImageContainer: {
     width: 50,
@@ -130,39 +114,5 @@ export default StyleSheet.create({
   closeBack: {
     width: '100%',
     height: '100%',
-  },
-  dashBoard: {
-    width: '90%',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  dashContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  dashBoardCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 50,
-    borderWidth: 1,
-    borderColor: 'black',
-    borderStyle: 'solid',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  dayCounter: {
-    width: '90%',
-    marginTop: 10,
-  },
-  dayCounterBox: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    // borderRadius: 10,
-    borderWidth: 1,
-    borderColor: 'black',
-    borderStyle: 'solid',
-    paddingVertical: 10,
-    marginVertical: 10,
   },
 });

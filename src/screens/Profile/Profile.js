@@ -1,216 +1,185 @@
-import React, {useEffect, useState, useContext, useRef} from 'react';
-import {Text, View, TouchableOpacity, ImageBackground} from 'react-native';
-// import {RecyclerListView, DataProvider, LayoutProvider} from 'recyclerlistview';
+import React, {useEffect, useState, useContext} from 'react';
+import {
+  Text,
+  View,
+  Pressable,
+  Image,
+  TouchableOpacity,
+  ScrollView,
+} from 'react-native';
 
 //styles
-import styles, {width, height} from './styles';
-
-//utils
-import Loader from '../Loader';
-
-//assets
+import styles from './styles';
 import ArrowSvg from '../../assets/icons/ArrowSvg';
-import CameraSvg from '../../assets/icons/CameraSvg';
-import LogoSvg from '../../assets/icons/LogoSvg';
-import EditProfileSvg from '../../assets/icons/EditProfileSvg';
-
-//components
-import Card from '../../components/local/Card';
-import GradientButton from '../../components/local/GradientButton';
-import SNavigator from '../../components/local/SNavigator';
-
-// //actions
-// import {logout} from '../../actions/user';
-// import {getOwnCards, deleteCard} from '../../actions/cards';
-// import {getBalance} from '../../actions/finances';
 
 // store
-import {GlobalContext} from '../../providers/store';
-// import TabBodyView from '../../providers/TabBodyView';
+import AppButton from '../../components/local/AppButton';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import CustomTextInput from '../../components/local/CustomTextInput';
+import Search1Svg from '../../assets/icons/Search1Svg';
+import ArrowSvg1 from '../../assets/icons/ArrowSvg1';
 
-function Profile({navigation}) {
-  // const { state, dispatch } = useContext(GlobalContext);
-  // const [isLoad, setIsLoad] = useState(true);
-  // const [name, setName] = useState(null);
-  // const [lastName, setLastName] = useState(null);
-  // const [balance, setBalance] = useState(null);
+import axios from 'axios';
 
-  // const cardsData = useRef([]);
-  // const CardsListView = useRef();
+const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
+const periods = [
+  '8:00 - 9:30',
+  '9:40 - 11:10',
+  '11:20 - 12:50',
+  '13:00 - 14:30',
+  '14:40 - 16:10',
+  '16:20 - 17:50',
+  '18:00 - 19:30',
+];
 
-  // const hasMore = useRef(true);
-  // const page = useRef(0);
+function Profile({navigation, route}) {
+  const {loginToken} = route.params;
 
-  // const [ownCardsProvider, setOwnCardsProvider] = useState(
-  //     new DataProvider((r1, r2) => {
-  //         return r1 !== r2;
-  //     })
-  // );
+  const [data, setData] = useState({});
+  const [year, setYear] = useState(null);
+  const [schedule, setSchedule] = useState([]);
+  // const [period, setPeriod] = useState('');
+  // const [courseName, setCourseName] = useState('');
+  // const [courseProfessor, setCourseProfessor] = useState('');
+  // const [color, setColor] = useState('');
 
-  // useEffect(() => {
-  //     fetchOwnCards();
-  //     fetchBalance();
-  // }, []);
+  const api = axios.create({
+    baseURL: `http://127.0.0.1:8000/api/`,
+  });
 
-  // const fetchOwnCards = async () => {
-  //     if (hasMore.current) {
-  //         const result = await getOwnCards(state.info.token, ++page.current);
+  const goBackTo = () => {
+    navigation.push('Schedule', {
+      loginToken: loginToken,
+    });
+  };
 
-  //         if (result.status === 'success') {
-  //             if (result.data.meta.total_page === page.current) {
-  //                 hasMore.current = false;
-  //             }
+  const fetchProfile = () => {
+    api
+      .get('custom_users/profile', {
+        headers: {
+          Authorization: `Bearer ${loginToken}`,
+        },
+      })
+      .then(res => {
+        console.log('profileData', res.data);
+        setData(res.data);
+        if (res.data.year === 'Freshman') {
+          setYear(1);
+        } else if (res.data.year === 'Sophomore') {
+          setYear(2);
+        } else if (res.data.year === 'Junior') {
+          setYear(3);
+        } else {
+          setYear(4);
+        }
+        return res.data;
+      });
+  };
 
-  //             setName(result.data.list[0].first_name);
-  //             setLastName(result.data.list[0].last_name);
-  //             console.log('My caaards', result.data);
-  //             setIsLoad(false);
+  const fetchSchedule = () => {
+    api
+      .get('posts', {
+        headers: {
+          Authorization: `Bearer ${loginToken}`,
+        },
+      })
+      .then(res => {
+        console.log('setSchedule', res.data);
+        setSchedule(res.data.data);
+        return res.data;
+      });
+  };
 
-  //             cardsData.current = [...cardsData.current, ...result.data.list];
+  console.log('Filter kekek', schedule.filter(d => d.day === 'Monday').length);
 
-  //             setOwnCardsProvider(ownCardsProvider.cloneWithRows(cardsData.current));
-  //         } else {
-  //             console.log('Мэдээллээ зөв оруулна уу', result);
-  //         }
-  //     }
-  // };
+  console.log('schedule.length', schedule && schedule.length);
 
-  // const endReached = () => {
-  //     fetchOwnCards();
-  // };
-
-  // const renderFunction = (type, data, index) => {
-  //     console.log('rendering item', index);
-  //     return (
-  //         <Card
-  //             color=""
-  //             name={data.first_name}
-  //             companyName={data.com_name}
-  //             image={data.image_path}
-  //             phone={data.phone}
-  //             handleDeleteCards={handleDeleteCard}
-  //             editPress={handleUpdateCard}
-  //             data={data}
-  //             index={index}
-  //         />
-  //     );
-  // };
-
-  // const layoutProvider = new LayoutProvider(
-  //     (index) => 'normal',
-  //     (type, dim) => {
-  //         dim.width = width;
-  //         dim.height = height;
-  //     }
-  // );
-
-  // const fetchBalance = async () => {
-  //     const result = await getBalance(state.info.token);
-  //     console.log('Blance', result);
-  //     if (result.status === 'success') {
-  //         setBalance(result.data.money);
-  //     } else {
-  //         console.log('Server error', result);
-  //     }
-  // };
-
-  // const handleDeleteCard = async (id) => {
-  //     const result = await deleteCard(id, state.info.token);
-  //     if (result.status === 'success') {
-  //         console.log('Successfully deleted', result);
-  //     }
-  // };
-
-  // const handleUpdateCard = (index) => {
-  //     navigation.navigate('UpdateCard', {
-  //         data: cardsData.current[index],
-  //     });
-  // };
-
-  // const goAddCard = () => {
-  //     navigation.navigate('AddCard');
-  // };
-
-  // const logOut = () => {
-  //     logout(dispatch);
-  // };
-
-  // const recyclerViewFooter = () => {
-  //     return (
-  //         <View style={styles.recyclerFooterContainer}>
-  //             <GradientButton
-  //                 style={[styles.newCardButton]}
-  //                 onPress={goAddCard}
-  //                 text="Нэрийн хуудас нэмэх"
-  //             />
-  //             <GradientButton onPress={logOut} text="Гарах" />
-  //         </View>
-  //     );
-  // };
-
-  // const goChangeProfile = () => {
-  //     navigation.navigate('ChangeProfile', {
-  //         last_name: lastName,
-  //         first_name: name,
-  //     });
-  // };
-
-  // if (isLoad) return <Loader />;
+  useEffect(() => {
+    fetchProfile();
+    fetchSchedule();
+  }, []);
 
   return (
-    // <TabBodyView navigation={navigation} screen="Profile" screenName="Профайл">
     <View style={[styles.container]}>
-      <Text>dsad</Text>
-      {/* <View style={[styles.profileBlue]}>
-          <View>
-            <View style={[styles.profileView]}>
-              <LogoSvg color="#FFFFFF" width="100%" height="100%" />
-            </View>
-            <Text style={[styles.nameText]}>{`${lastName.substring(
-              0,
-              1,
-            )}.${name}`}</Text>
-            <Text style={styles.showcurrencyText}>Таны iCard оноо</Text>
-            <Text style={[styles.currencyText]}>{balance}</Text>
-          </View>
+      <View style={[styles.header]}>
+        <Text style={[styles.headerText]}></Text>
+      </View>
+      <View style={[styles.headerNameContainer]}>
+        <TouchableOpacity
+          style={[styles.closeBackContainer]}
+          onPress={goBackTo}>
+          <ArrowSvg1 />
+        </TouchableOpacity>
+        {/* <Text style={[styles.headerName]}>Profile</Text> */}
+      </View>
 
-          <View style={[styles.profileBox]}>
-            {state.info.avatar ? (
-              <ImageBackground
-                source={{uri: state.info.avatar}}
-                style={[styles.ImageBackGround]}
-              />
-            ) : (
-              <View style={[styles.defaultImageBackGround]}>
-                <CameraSvg width="70%" height="70%" />
-              </View>
-            )}
-          </View>
-          <TouchableOpacity
-            style={[styles.changeProfileIcon]}
-            onPress={goChangeProfile}>
-            <EditProfileSvg />
-          </TouchableOpacity>
+      <View style={[styles.bodyContainer]}>
+        <View style={[styles.imageBox]}>
+          {data.gender === 'female' ? (
+            <Image
+              style={[styles.image]}
+              source={require('../../assets/images/femaleProfile.jpeg')}
+            />
+          ) : (
+            <Image
+              style={[styles.image]}
+              source={require('../../assets/images/maleProfile.jpeg')}
+            />
+          )}
         </View>
 
-        {ownCardsProvider._size > 0 && (
-          <RecyclerListView
-            style={styles.list}
-            rowRenderer={renderFunction}
-            layoutProvider={layoutProvider}
-            dataProvider={ownCardsProvider}
-            onEndReached={endReached}
-            onEndReachedThreshold={0}
-            contentContainerStyle={styles.listContentContainer}
-            scrollViewProps={{
-              showsVerticalScrollIndicator: false,
-              ref: ref => (CardsListView.current = ref),
-            }}
-            renderFooter={recyclerViewFooter}
-          />
-        )} */}
+        <View style={{alignItems: 'center'}}>
+          <Text style={{fontSize: 18, marginBottom: 5}}>
+            {data.last_name} {data.name}
+          </Text>
+          <Text style={{fontWeight: '300', color: 'grey', marginBottom: 5}}>
+            {data.department} {data.year}
+          </Text>
+        </View>
+
+        <Text style={{width: '90%', marginBottom: 20, color: 'grey'}}>
+          Dashboard
+        </Text>
+        <View style={[styles.dashBoard]}>
+          <View style={[styles.dashContainer]}>
+            <View style={[styles.dashBoardCircle]}>
+              <Text>{data.department}</Text>
+            </View>
+            <Text>Department</Text>
+          </View>
+          <View style={[styles.dashContainer]}>
+            <View style={[styles.dashBoardCircle]}>
+              <Text>{year}</Text>
+            </View>
+            <Text>{data.year}</Text>
+          </View>
+          <View style={[styles.dashContainer]}>
+            <View style={[styles.dashBoardCircle]}>
+              <Text>{schedule && schedule.length}</Text>
+            </View>
+            <Text>Classes</Text>
+          </View>
+          <View style={[styles.dashContainer]}>
+            <View style={[styles.dashBoardCircle]}>
+              <Text>{schedule && schedule.length * 3}</Text>
+            </View>
+            <Text>Credits</Text>
+          </View>
+        </View>
+
+        <View style={[styles.dayCounter]}>
+          {days.map((day, index) => (
+            <View style={[styles.dayCounterBox]}>
+              <Text style={{width: '33%', textAlign: 'center'}}>{day}</Text>
+              <Text style={{width: '33%', textAlign: 'center'}}>
+                {schedule.filter(d => d.day === day).length}
+              </Text>
+              <Text style={{width: '33%', textAlign: 'center'}}>Classes</Text>
+            </View>
+          ))}
+        </View>
+      </View>
     </View>
-    // </TabBodyView>
   );
 }
 

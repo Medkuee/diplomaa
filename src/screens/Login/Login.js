@@ -11,15 +11,43 @@ import AppButton from '../../components/local/AppButton';
 import SmartphoneSvg from '../../assets/icons/SmartphoneSvg';
 import LockSvg from '../../assets/icons/LockSvg';
 
+import axios from 'axios';
+
 function Login({navigation}) {
-  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const handleNavigateSignUp = () => {
     navigation.navigate('SignUp');
   };
-  const handleLogin = () => {
-    navigation.navigate('Home');
+
+  const api = axios.create({
+    baseURL: `http://127.0.0.1:8000/api/`,
+  });
+
+  const handleLogin = async () => {
+    let res = await api.post('custom_users/login', {
+      email: email,
+      password: password,
+    });
+    if (res.data.status === 'success') {
+      setEmail('');
+      setPassword('');
+
+      if (res.data.data.userLogin.name) {
+        navigation.navigate('Schedule', {
+          loginToken: res.data.data.loginToken,
+        });
+      } else {
+        navigation.navigate('Home', {
+          loginToken: res.data.data.loginToken,
+        });
+      }
+    } else {
+      alert('An error occurred');
+    }
+
+    console.log('Login Response', res.data.data.userLogin);
   };
 
   return (
@@ -31,10 +59,10 @@ function Login({navigation}) {
 
       <CustomTextInput
         style={[styles.InputTextMargin]}
-        placeholder="Username"
-        value={username}
-        onChangeText={setUsername}
-        maxLength={8}
+        placeholder="Email"
+        value={email}
+        onChangeText={setEmail}
+        maxLength={50}
         keyboardType="numeric">
         <SmartphoneSvg />
       </CustomTextInput>
